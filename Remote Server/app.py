@@ -183,3 +183,56 @@ def loginAdmin():
 
     resp = make_response(jsonify({'token': encoded_jwt}), 200)
     return resp
+
+
+@app.route('/api/admin/activities', methods=['GET'])
+@token_required
+def getActivities(current_user):
+    try:
+        activities = Activity.query.all()
+        all = []
+        for item in activities:
+            all.append({
+              'id': item.id ,
+              'type': item.type,
+              'datetime': item.datetime,
+              'officeId': item.officeId,
+              'userId': item.userId
+            })
+
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    resp = make_response(jsonify({'allActivities': all}), 200)
+    return resp
+
+@app.route('/api/admin/setlights', methods=['PUT'])
+@token_required
+def editOfficeLightTime(current_user):
+    try:
+        body = request.get_json()
+        officeid = body['officeId']
+        lightOn = body['lightOn']
+        lightOff = body['lightOff']
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    if (body == None) or (body['officeId'] == None) or (body['lightOff'] == None) or (body['lightOff'] == None):
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+
+
+    office = Office.query.filter_by(id=officeid).first()
+    if office == None:
+        resp = make_response(jsonify({'message': 'Office not found.'}), 400)
+        return resp
+    
+    office.lightsOnTime = lightOn
+    office.lightsOffTime = lightOff
+    db.session.commit()    
+    
+
+    resp = make_response(jsonify({'message': 'Time changed.'}), 200)
+    return resp
