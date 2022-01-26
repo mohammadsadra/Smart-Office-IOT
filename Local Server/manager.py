@@ -1,4 +1,4 @@
-from LocalServer import db , app
+from app import db , app
 from flask_script import Manager
 
 manger = Manager(app)

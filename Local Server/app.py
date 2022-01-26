@@ -5,7 +5,7 @@ from flask_restful import Api, Resource
 from flask_marshmallow import Marshmallow
 from flask_cors import CORS
 from sqlalchemy.orm import backref
-from datetime import date
+from datetime import datetime, timedelta
 import os
 import jwt
 from functools import wraps
@@ -50,6 +50,32 @@ class Cache(db.Model):
     userId = Column(String, ForeignKey('User.guid'))
     user = db.relationship("User", backref=backref("User", uselist=False))
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        # jwt is passed in the request header
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization']
+            token = token.split(' ')[1]
+        # return 401 if token is not passed
+        if not token:
+            return jsonify({'message' : 'Token is missing !!'}), 401
+  
+        try:
+            # decoding the payload to fetch the stored details
+            data = jwt.decode(token, pv_key, algorithms=["HS256"])
+            current_user = User.query\
+                .filter_by(guid = data['guid'])\
+                .first()
+        except:
+            return jsonify({'message' : 'Token is invalid !!'}), 401
+        # returns the current logged in users contex to the routes
+        return  f(current_user, *args, **kwargs)
+  
+    return decorated
+
+
 class UserSchema(ma.Schema):
     class Meta:
         fields = ('id', 'lightValue', 'expireDate', 'userId')
@@ -82,3 +108,38 @@ def loginUser():
 
     resp = make_response(jsonify({'token': encoded_jwt}), 200)
     return resp
+
+#DIFFERNT FROM HW
+@app.route('/api/user', methods=['POST'])
+@token_required
+def setLight(current_user):
+    
+    try:
+        body = request.get_json()
+        light = body['value']
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    if (body == None) or (body['value'] == None):
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+
+    record = Cache.query\
+                .filter_by(userId = current_user.guid)\
+                .first()
+    if record == None:
+        newItem = Cache(lightValue= light, expireDate= datetime.now() + timedelta(hours=12), userId= current_user.guid)
+        db.session.add(newItem)
+    else:
+        record.lightValue = light
+        record.expireDate= datetime.now() + timedelta(hours=12)
+    
+    db.session.commit()
+            
+    
+    resp = make_response(jsonify({
+        'expireDate': datetime.now() + timedelta(hours=12),
+    }), 200)
+    return resp
+ 
