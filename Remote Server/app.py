@@ -8,7 +8,9 @@ from sqlalchemy.orm import backref
 from datetime import datetime
 import os
 import jwt
+import uuid
 from functools import wraps
+import requests
 
 ##################################################
 #REMOTE SERVER
@@ -34,6 +36,12 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 
+class Office(db.Model):
+    __tablename__ = 'Office'
+    id = Column(Integer, primary_key=True)
+    lightsOnTime = Column(String, nullable=True)
+    lightsOffTime = Column(String, nullable=True)
+
 class User(db.Model):
     __tablename__ = 'User'
     id = Column(Integer, primary_key=True)
@@ -41,13 +49,8 @@ class User(db.Model):
     card = Column(String, unique=True)
     roomId = Column(Integer, nullable=False)
     lightValue = Column(Float ,nullable=False)
-
-
-class Office(db.Model):
-    __tablename__ = 'Office'
-    id = Column(Integer, primary_key=True)
-    lightsOnTime = Column(String, nullable=True)
-    lightsOffTime = Column(String, nullable=True)
+    officeId = Column(Integer, ForeignKey('Office.id'))
+    office = db.relationship("Office", backref=backref("Office3", uselist=False))
 
 class Admin(db.Model):
     __tablename__ = 'Admin'
@@ -84,8 +87,8 @@ def token_required(f):
         try:
             # decoding the payload to fetch the stored details
             data = jwt.decode(token, pv_key, algorithms=["HS256"])
-            current_user = User.query\
-                .filter_by(guid = data['guid'])\
+            current_user = Admin.query\
+                .filter_by(user = data['username'])\
                 .first()
         except:
             return jsonify({'message' : 'Token is invalid !!'}), 401
@@ -176,7 +179,7 @@ def loginAdmin():
         return resp
     
     encoded_jwt = jwt.encode({
-    "guid": user.user,
+    "username": user.user,
     "exp": 1649106280
     }, pv_key, algorithm="HS256")
     print(encoded_jwt)
@@ -235,4 +238,47 @@ def editOfficeLightTime(current_user):
     
 
     resp = make_response(jsonify({'message': 'Time changed.'}), 200)
+    return resp
+
+@app.route('/api/admin/user/register', methods=['POST'])
+@token_required
+def registerUser(current_user):
+    try:
+        body = request.get_json()
+        card = body['card']
+        roomId = body['roomId']
+        officeId = body['officeId']
+        lightValue = body['lightValue']
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    
+    if (body == None) or (card == None) or (roomId == None) or (lightValue == None) or (officeId == None):
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+
+    office = Office.query.get(officeId)
+    if office == None:
+        resp = make_response(jsonify({'message': 'Office not found :)).'}), 400)
+        return resp
+
+
+    user = User.query.filter_by(card=card).first()
+    if user != None:
+        resp = make_response(jsonify({'message': 'Card already taken :)).'}), 400)
+        return resp
+
+    guid = uuid.uuid4()
+    newUser = User(card=card, roomId=roomId, officeId = officeId, lightValue=lightValue, guid=str(guid))
+
+    resp = requests.post('http://localhost:5001/api/user/add',json={"card":card, "roomId":roomId, "guid":str(guid)})
+    print(resp.status_code)
+    if resp.status_code == 200:
+        db.session.add(newUser)
+        db.session.commit()
+        resp = make_response(jsonify({'message': 'User created!'}), 200)
+    else:
+        resp = make_response(jsonify({'message': 'CAN NOT BE CREATED!'}), 400)
+
     return resp

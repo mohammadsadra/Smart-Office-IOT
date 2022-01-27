@@ -143,3 +143,37 @@ def setLight(current_user):
     }), 200)
     return resp
  
+
+
+##################################################################
+#####################        CUSTOM APIS     #####################
+##################################################################
+
+@app.route('/api/user/add', methods=['POST'])
+def addUserToTable():
+    try:
+        body = request.get_json()
+        print(body)
+        guid = body['guid']
+        card = body['card']
+        roomId = body['roomId']
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    if (body == None) or (body['guid'] == None) or ( body['card'] == None) or (body['roomId'] == None):
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+
+
+    
+    newItem = User(guid= guid, card= card, roomId=roomId)
+    db.session.add(newItem)
+    db.session.commit()
+            
+    
+    resp = make_response(jsonify({
+        'message': 'User added to table in local server :))',
+    }), 200)
+    return resp
+ 
