@@ -23,7 +23,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 # with this callback you can see if your publish was successful
 def on_publish(client, userdata, mid, properties=None):
-    print("mid: " + str(mid)+ str(client))
+    print("mid: " + str(mid))
 
 # print which topic was subscribed to
 def on_subscribe(client, userdata, mid, granted_qos, properties=None):
@@ -42,9 +42,9 @@ client.on_connect = on_connect
 # enable TLS for secure connection
 client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
 # set username and password
-client.username_pw_set("imohammadsadra", "Sadra7899")
+client.username_pw_set("SAlireza78", "IoT@9731009")
 # connect to HiveMQ Cloud on port 8883 (default for MQTT)
-client.connect("5c2c7c2605694c43ba60ad1f9f812f87.s2.eu.hivemq.cloud", 8883)
+client.connect("9ac665715aee4617b293e90240ba8f5c.s2.eu.hivemq.cloud", 8883)
 
 # setting callbacks, use separate functions like above for better visibility
 client.on_subscribe = on_subscribe
@@ -56,8 +56,7 @@ client.subscribe("encyclopedia/#", qos=1)
 
 # a single publish, this can also be done in loops, etc.
 client.publish("encyclopedia/temperature", payload="hot", qos=1)
-client.publish("encyclopedia/temperature", payload="cold", qos=1)
 
 # loop_forever for simplicity, here you need to stop the loop manually
 # you can also use loop_start and loop_stop
-client.loop_forever()
+client.loop_start()
