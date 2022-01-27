@@ -282,3 +282,67 @@ def registerUser(current_user):
         resp = make_response(jsonify({'message': 'CAN NOT BE CREATED!'}), 400)
 
     return resp
+
+
+##################################################################
+#####################        CUSTOM APIS     #####################
+##################################################################
+
+@app.route('/api/user/getlight', methods=['GET'])
+def getLight():
+    try:
+        body = request.get_json()
+        print(body)
+        guid = body['guid']
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    if (body == None) or (body['guid'] == None):
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+
+    
+    user = User.query.filter_by(guid=guid).first()
+
+    if user == None:
+        resp = make_response(jsonify({'message': 'User not found',}), 400)
+        return resp
+    
+    resp = make_response(jsonify({
+        'lightValue': user.lightValue,
+    }), 200)
+    return resp
+ 
+@app.route('/api/user/addActivity', methods=['POST'])
+def addActivityToTable():
+    try:
+        body = request.get_json()
+        print(body)
+        userId = body['userId']
+        officeId = body['officeId']
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    if (body == None) or (userId == None) or ( officeId == None):
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+
+
+    lastActivity = Activity.query.filter_by(userId=userId).order_by(Activity.datetime.desc()).first()
+    print(lastActivity)
+    if lastActivity == None:
+        newItem = Activity(userId=userId, officeId=officeId, datetime=datetime.now(), type=True)
+    else:
+        newItem = Activity(userId=userId, officeId=officeId, datetime=datetime.now(), type= not lastActivity.type)
+    
+    db.session.add(newItem)
+    db.session.commit()
+            
+    
+    resp = make_response(jsonify({
+        'message': 'Activity added for user: ( ' + str(userId) + ' ) in office: ( ' + str(officeId) + ' ) at ( ' + str(datetime) + ' )',
+    }), 200)
+    return resp
+ 

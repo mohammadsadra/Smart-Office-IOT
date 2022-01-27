@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import os
 import jwt
 from functools import wraps
-import uuid
+import requests
 
 ##################################################
 #LOCAL SERVER
@@ -100,14 +100,39 @@ def loginUser():
     if user == None:
         resp = make_response(jsonify({'message': 'User not found.'}), 400)
         return resp
+    
     encoded_jwt = jwt.encode({
     "guid": user.guid,
     "exp": 1649106280
     }, pv_key, algorithm="HS256")
-    print(encoded_jwt)
-
-    resp = make_response(jsonify({'token': encoded_jwt}), 200)
-    return resp
+    
+    cachedUser = Cache.query.filter_by(userId=user.guid).first()
+    
+    print((datetime.now()  + timedelta(hours=12)))
+    if cachedUser == None or cachedUser.expireDate < datetime.now():
+        resp = requests.get('http://localhost:5000/api/user/getlight',json={"guid":user.guid})
+        if resp.status_code == 200:
+            newCache = Cache(lightValue=resp.json()['lightValue'], expireDate=datetime.now()+timedelta(hours=12), userId=user.guid)
+            ### LOCAL SERVER SENDS ITS OWN OFFICE ID
+            activityResponse = requests.post('http://localhost:5000/api/user/addActivity',json={"userId":user.guid, "officeId":1})
+            if activityResponse.status_code != 200:
+                resp = make_response(jsonify({'message': 'Failed setting ACTIVITY from remote server!!!'}), 400)
+                return resp
+            db.session.add(newCache)
+            db.session.commit()
+            resp = make_response(jsonify({'token': encoded_jwt, 'lightValue': newCache.lightValue, 'message': 'Returned from remote server'}), 200)
+            return resp
+        else:
+            resp = make_response(jsonify({'message': 'Failed getting light from remote server!!!'}), 400)
+            return resp
+    else:
+        resp = make_response(jsonify({'token': encoded_jwt, 'lightValue': cachedUser.lightValue, 'message': 'Returned from CACHE'}), 200)
+        activityResponse = requests.post('http://localhost:5000/api/user/addActivity',json={"userId":user.guid, "officeId":1})
+        if activityResponse.status_code != 200:
+            resp = make_response(jsonify({'message': 'Failed setting ACTIVITY in remote server!!!'}), 400)
+            return resp
+        return resp
+    
 
 #DIFFERNT FROM HW
 @app.route('/api/user', methods=['POST'])
