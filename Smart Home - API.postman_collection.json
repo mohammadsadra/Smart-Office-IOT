@@ -1,0 +1,326 @@
+{
+	"info": {
+		"_postman_id": "43521ef9-8222-4676-9bb3-59e5767890a8",
+		"name": "Smart Home - API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "login user - local server",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"guid\":\"2803e714-51ce-4788-92c4-6eeaf4a1213e\",\n    \"card\":2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/api/user/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set light - local server",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJndWlkIjoiZjUwZWMwYjctZjk2MC00MDBkLTkxZjAtYzQyYTZkNDRlM2QwIiwiZXhwIjoxNjQ5MTA2MjgwfQ.3G7nxYFgdUqT9B2X0Rc-H9opnAfEN9YHi3dRVcFcXX4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"value\": 3.44\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/user",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register admin - remote server",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJndWlkIjoiZjUwZWMwYjctZjk2MC00MDBkLTkxZjAtYzQyYTZkNDRlM2QwIiwiZXhwIjoxNjQ5MTA2MjgwfQ.3G7nxYFgdUqT9B2X0Rc-H9opnAfEN9YHi3dRVcFcXX4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"imohammadsadra\",\n    \"password\":\"1234567890\",\n    \"officeId\":\"1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/admin/register",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"admin",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register office - remote server",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJndWlkIjoiZjUwZWMwYjctZjk2MC00MDBkLTkxZjAtYzQyYTZkNDRlM2QwIiwiZXhwIjoxNjQ5MTA2MjgwfQ.3G7nxYFgdUqT9B2X0Rc-H9opnAfEN9YHi3dRVcFcXX4",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lightOnTime\": \"14:00\",\n    \"lightOffTime\":\"23:30\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/office/register",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"office",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login admin - remote server",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJndWlkIjoiZjUwZWMwYjctZjk2MC00MDBkLTkxZjAtYzQyYTZkNDRlM2QwIiwiZXhwIjoxNjQ5MTA2MjgwfQ.3G7nxYFgdUqT9B2X0Rc-H9opnAfEN9YHi3dRVcFcXX4",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": \"imohammadsadra\",\n    \"password\":\"1234567890\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/admin/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"admin",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get activities - remote server",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Imltb2hhbW1hZHNhZHJhIiwiZXhwIjoxNjQ5MTA2MjgwfQ.-O1a8UxG4TrQxe_f5TX0LGyprVoIuOIsSFrVYQdEayY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/admin/activities",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"admin",
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "admin set light - remote server",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Imltb2hhbW1hZHNhZHJhIiwiZXhwIjoxNjQ5MTA2MjgwfQ.-O1a8UxG4TrQxe_f5TX0LGyprVoIuOIsSFrVYQdEayY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"officeId\": 1,\n    \"lightOn\": \"5:00\",\n    \"lightOff\":\"10:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/admin/setlights",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"admin",
+						"setlights"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register new user - remote server",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Imltb2hhbW1hZHNhZHJhIiwiZXhwIjoxNjQ5MTA2MjgwfQ.-O1a8UxG4TrQxe_f5TX0LGyprVoIuOIsSFrVYQdEayY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"officeId\": 1,\n    \"roomId\": 2,\n    \"card\": 2,\n    \"lightValue\": 2.3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/admin/user/register",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"admin",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
