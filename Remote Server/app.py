@@ -314,7 +314,7 @@ def registerUser(current_user):
 
 @app.route('/api/user/getlight', methods=['GET'])
 @localserver_token_required
-def getLight():
+def getLight(ok):
     try:
         body = request.get_json()
         print(body)
@@ -341,7 +341,7 @@ def getLight():
  
 @app.route('/api/user/addActivity', methods=['POST'])
 @localserver_token_required
-def addActivityToTable():
+def addActivityToTable(ok):
     try:
         body = request.get_json()
         print(body)
