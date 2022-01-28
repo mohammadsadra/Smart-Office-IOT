@@ -189,6 +189,7 @@ def loginUser():
             db.session.add(newCache)
             db.session.commit()
             resp = make_response(jsonify({'token': encoded_jwt, 'lightValue': newCache.lightValue, 'message': 'Returned from remote server'}), 200)
+            # client.publish("smartoffice/light", payload=newCache.lightValue, qos=1)
             return resp
         else:
             resp = make_response(jsonify({'message': 'Failed getting light from remote server!!!'}), 400)
@@ -199,6 +200,9 @@ def loginUser():
         if activityResponse.status_code != 200:
             resp = make_response(jsonify({'message': 'Failed setting ACTIVITY in remote server!!!'}), 400)
             return resp
+        # else:
+        #     client.publish("smartoffice/light", payload=cachedUser.lightValue, qos=1)
+
         return resp
     
 
@@ -234,6 +238,7 @@ def setLight(current_user):
     resp = make_response(jsonify({
         'expireDate': datetime.now() + timedelta(hours=12),
     }), 200)
+    # client.publish("smartoffice/light", payload=float(light), qos=1)
     return resp
  
 
