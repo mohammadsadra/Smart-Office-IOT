@@ -134,6 +134,12 @@ void callback(char *topic, byte *payload, unsigned int length)
     lightValue = atof(lightChar);
     Serial.println(lightValue);
     analogWrite(led1_1, int(lightValue));
+    if(lightValue > 0 ){
+      servo.write(90);
+    } else {
+       servo.write(0);
+    }
+
   }
 
   // Switch on the LED if the first character is present
@@ -182,6 +188,13 @@ void reconnect()
 
 void setup()
 {
+
+  //********** CHANGE PIN FUNCTION  TO GPIO **********
+  //GPIO 1 (TX) swap the pin to a GPIO.
+  pinMode(1, FUNCTION_3); 
+  //GPIO 3 (RX) swap the pin to a GPIO.
+  pinMode(3, FUNCTION_3); 
+  //**************************************************
   delay(1000);
 
   nuidPICC[3] = 0xA9;
@@ -192,7 +205,10 @@ void setup()
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(led1_1, OUTPUT);
+  pinMode(1, OUTPUT);
+  pinMode(3, OUTPUT);
   digitalWrite(led1_1, LOW);
+  digitalWrite(3, LOW);
 
   nuidPICC[3] = 0xA9;
   nuidPICC[2] = 0x33;
@@ -246,6 +262,7 @@ void setup()
 
 void loop()
 {
+  digitalWrite(3, LOW);
   if (!client->connected())
   {
     reconnect();
@@ -307,6 +324,10 @@ void loop()
   // Prints the distance on the Serial Monitor
   Serial.print("Distance: ");
   Serial.println(distance);
+        if(distance <= 20){
+        digitalWrite(1,HIGH)
+    }
+
   delay(2000);
 
   // Halt PICC

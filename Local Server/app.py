@@ -19,7 +19,7 @@ import requests
 
 lastCardIdReceived = 1
 lastUserId = ''
-
+turnOn = False
 
 # setting callbacks for different events to see if it works, print the message etc.
 def on_connect(client, userdata, flags, rc, properties=None):
@@ -40,6 +40,7 @@ def on_subscribe(client, userdata, mid, granted_qos, properties=None):
 def on_message(client, userdata, msg):
     global lastCardIdReceived
     global lastUserId
+    global turnOn
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
     # print("message received ", str(msg.payload.decode("utf-8")))
     # print("message topic=", msg.topic)
@@ -47,13 +48,15 @@ def on_message(client, userdata, msg):
     # print("message retain flag=", msg.retain)
     if msg.topic == 'smartoffice/card':
         print('lastCardId updated')
-        if str(lastCardIdReceived) == str(msg.payload):
+        if str(lastCardIdReceived) == str(msg.payload) and turnOn:
             client.publish("smartoffice/light", payload="0.0", qos=1)
+            turnOn = False
 
         lastCardIdReceived = int(msg.payload)
-    if msg.topic == 'smartoffice/guid':
+    if msg.topic == 'smartoffice/guid' :
         print('guid updated')
         lastUserId = str(msg.payload).split("'")[1]
+        turnOn = True
 
 
 # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
