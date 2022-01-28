@@ -254,7 +254,7 @@ def setLight(current_user):
         record.lightValue = light
         record.expireDate = datetime.now() + timedelta(hours=12)
 
-    requests.put('http://localhost:5000/user/setuserlight', json={"guid": current_user.guid, "lightValue": light},headers={"Authorization": "Bearer " + serverJWT})
+    requests.put('http://localhost:5000/api/user/setuserlight', json={"guid": current_user.guid, "lightValue": light},headers={"Authorization": "Bearer " + serverJWT})
     db.session.commit()
 
     resp = make_response(jsonify({
