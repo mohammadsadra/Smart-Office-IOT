@@ -18,6 +18,7 @@ from functools import wraps
 import requests
 
 lastCardIdReceived = 1
+lastUserId = ''
 
 
 # setting callbacks for different events to see if it works, print the message etc.
@@ -38,6 +39,7 @@ def on_subscribe(client, userdata, mid, granted_qos, properties=None):
 # print message, useful for checking if it was successful
 def on_message(client, userdata, msg):
     global lastCardIdReceived
+    global lastUserId
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
     # print("message received ", str(msg.payload.decode("utf-8")))
     # print("message topic=", msg.topic)
@@ -45,7 +47,13 @@ def on_message(client, userdata, msg):
     # print("message retain flag=", msg.retain)
     if msg.topic == 'smartoffice/card':
         print('lastCardId updated')
-        lastCardIdReceived = float(msg.payload)
+        if str(lastCardIdReceived) == str(msg.payload):
+            client.publish("smartoffice/light", payload="0.0", qos=1)
+
+        lastCardIdReceived = int(msg.payload)
+    if msg.topic == 'smartoffice/guid':
+        print('guid updated')
+        lastUserId = str(msg.payload).split("'")[1]
 
 
 # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
@@ -153,9 +161,10 @@ def loginUser():
     # client.publish("encyclopedia/temperature", payload="Mn omadam tooooooo!", qos=1)
     try:
         body = request.get_json()
-        guid = body['guid']
-        card = body['card']
-        # card = lastCardIdReceived
+        # guid = body['guid']
+        # card = body['card']
+        guid = lastUserId
+        card = lastCardIdReceived
     except Exception as ex:
         resp = make_response(jsonify({'message': 'Bad request.'}), 400)
         return resp
@@ -166,6 +175,8 @@ def loginUser():
 
     user = User.query.filter_by(guid=guid).first()
     if user == None:
+        print(card)
+        print(guid)
         resp = make_response(jsonify({'message': 'User not found.'}), 400)
         return resp
 
@@ -196,7 +207,7 @@ def loginUser():
             db.session.commit()
             resp = make_response(jsonify(
                 {'token': encoded_jwt, 'lightValue': newCache.lightValue, 'message': 'Returned from remote server'}),
-                                 200)
+                200)
             client.publish("smartoffice/light", payload=newCache.lightValue, qos=1)
             return resp
         else:
