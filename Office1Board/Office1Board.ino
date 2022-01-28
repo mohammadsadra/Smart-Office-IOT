@@ -53,6 +53,9 @@ const int led1_1 = D4;
 
 float lightValue = 0;
 
+char *user2 = "2803e714-51ce-4788-92c4-6eeaf4a1213e";
+char *user1 = "f64982f3-a5c9-4c67-95ca-2ffc060f4c9a";
+
 Servo servo;
 
 constexpr uint8_t RST_PIN = 5; // Configurable, see typical pin layout above
@@ -180,6 +183,12 @@ void reconnect()
 void setup()
 {
   delay(1000);
+
+  nuidPICC[3] = 0xA9;
+  nuidPICC[2] = 0x33;
+  nuidPICC[1] = 0x3D;
+  nuidPICC[0] = 0xEC;
+  
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(led1_1, OUTPUT);
@@ -252,18 +261,33 @@ void loop()
   
   Serial.println(F("The NUID tag is:"));
   printDec(rfid.uid.uidByte, rfid.uid.size);
-  
 
-  unsigned long now = millis();
-  if (now - lastMsg > 10000)
-  {
-    lastMsg = now;
-    ++value;
-    // snprintf(msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
-    Serial.println("Publish message: 2");
-    // Serial.println(msg);
-    client->publish("smartoffice/card", "2");
-  }
+  if (rfid.uid.uidByte[0] != nuidPICC[0] || 
+    rfid.uid.uidByte[1] != nuidPICC[1] || 
+    rfid.uid.uidByte[2] != nuidPICC[2] || 
+    rfid.uid.uidByte[3] != nuidPICC[3] ) {
+  
+      client->publish("smartoffice/card", "1");
+      client->publish("smartoffice/guid", user1);
+      Serial.println("Publish message: 1");
+      Serial.println("-----------------------------------------------");
+  } else {
+      client->publish("smartoffice/card", "2");
+      client->publish("smartoffice/guid", user2);
+      Serial.println("Publish message: 2");
+      Serial.println("-----------------------------------------------");
+    }
+
+//  unsigned long now = millis();
+//  if (now - lastMsg > 10000)
+//  {
+//    lastMsg = now;
+//    ++value;
+//    // snprintf(msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
+//    Serial.println("Publish message: 2");
+//    // Serial.println(msg);
+//    client->publish("smartoffice/card", card);
+//  }
 
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
@@ -301,6 +325,7 @@ float getFloat(byte packet[], int i)
 
 void printDec(byte *buffer, byte bufferSize)
 {
+
   for (byte i = 0; i < bufferSize; i++)
   {
     Serial.print(buffer[i] < 0x10 ? " 0" : " ");
