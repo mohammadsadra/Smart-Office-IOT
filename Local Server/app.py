@@ -177,6 +177,10 @@ def loginUser():
 
     print((datetime.now() + timedelta(hours=12)))
     if cachedUser == None or cachedUser.expireDate < datetime.now():
+        if cachedUser != None:
+            db.session.delete(cachedUser)
+            db.session.commit()
+        
         resp = requests.get('http://localhost:5000/api/user/getlight', json={"guid": user.guid})
         if resp.status_code == 200:
             newCache = Cache(lightValue=resp.json()['lightValue'], expireDate=datetime.now() + timedelta(hours=12),
