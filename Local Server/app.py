@@ -44,6 +44,7 @@ def on_message(client, userdata, msg):
     # print("message qos=", msg.qos)
     # print("message retain flag=", msg.retain)
     if msg.topic == 'smartoffice/card':
+        print('lastCardId updated')
         lastCardIdReceived = float(msg.payload)
 
 
@@ -173,7 +174,7 @@ def loginUser():
         "exp": 1649106280
     }, pv_key, algorithm="HS256")
 
-    cachedUser = Cache.query.filter_by(userId=user.guid).first()
+    cachedUser = Cache.query.filter_by(userId=user.guid).order_by(Cache.expireDate.desc()).first()
 
     print((datetime.now() + timedelta(hours=12)))
     if cachedUser == None or cachedUser.expireDate < datetime.now():
@@ -192,7 +193,7 @@ def loginUser():
             resp = make_response(jsonify(
                 {'token': encoded_jwt, 'lightValue': newCache.lightValue, 'message': 'Returned from remote server'}),
                                  200)
-            # client.publish("smartoffice/light", payload=newCache.lightValue, qos=1)
+            client.publish("smartoffice/light", payload=newCache.lightValue, qos=1)
             return resp
         else:
             resp = make_response(jsonify({'message': 'Failed getting light from remote server!!!'}), 400)
@@ -205,9 +206,8 @@ def loginUser():
         if activityResponse.status_code != 200:
             resp = make_response(jsonify({'message': 'Failed setting ACTIVITY in remote server!!!'}), 400)
             return resp
-        # else:
-        #     client.publish("smartoffice/light", payload=cachedUser.lightValue, qos=1)
 
+        client.publish("smartoffice/light", payload=cachedUser.lightValue, qos=1)
         return resp
 
 
@@ -241,7 +241,7 @@ def setLight(current_user):
     resp = make_response(jsonify({
         'expireDate': datetime.now() + timedelta(hours=12),
     }), 200)
-    # client.publish("smartoffice/light", payload=float(light), qos=1)
+    client.publish("smartoffice/light", payload=float(light), qos=1)
     return resp
 
 

@@ -47,11 +47,11 @@ int value = 0;
 
 //*******************************************************
 
-const int trigPin = D4;
+const int trigPin = D0;
 const int echoPin = D3;
-const int led1_1 = D0;
+const int led1_1 = D4;
 
-// float lightValue;
+float lightValue = 0;
 
 Servo servo;
 
@@ -118,35 +118,39 @@ void callback(char *topic, byte *payload, unsigned int length)
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
+  char lightChar[10]; 
   for (int i = 0; i < length; i++)
   {
     Serial.print((char)payload[i]);
+    lightChar[i] = (char)payload[i];
   }
   Serial.println();
 
-  // if (topic == 'smartoffice/token')
-  // {
-  //   lightValue = getFloat(payload, length);
-  //   Serial.print(lightValue);
-  // }
+  if (strcmp(topic,"smartoffice/light")==0)
+  {
+    lightValue = atof(lightChar);
+    Serial.println(lightValue);
+    analogWrite(led1_1, int(lightValue));
+  }
 
   // Switch on the LED if the first character is present
   if ((char)payload[0] != NULL)
   {
-    digitalWrite(LED_BUILTIN, LOW); // Turn the LED on (Note that LOW is the voltage level
+//    digitalWrite(LED_BUILTIN, LOW); // Turn the LED on (Note that LOW is the voltage level
     // but actually the LED is on; this is because
     // it is active low on the ESP-01)
     delay(500);
-    digitalWrite(LED_BUILTIN, HIGH); // Turn the LED off by making the voltage HIGH
+//    digitalWrite(LED_BUILTIN, HIGH); // Turn the LED off by making the voltage HIGH
   }
   else
   {
-    digitalWrite(LED_BUILTIN, HIGH); // Turn the LED off by making the voltage HIGH
+//    digitalWrite(LED_BUILTIN, HIGH); // Turn the LED off by making the voltage HIGH
   }
 }
 
 void reconnect()
 {
+  delay(1000);
   // Loop until we’re reconnected
   while (!client->connected())
   {
@@ -158,7 +162,7 @@ void reconnect()
     {
       Serial.println("connected");
       // Once connected, publish an announcement…
-      client->publish("smartoffice", "hello world");
+      client->publish("smartoffice", "Smart office is running...");
       // … and resubscribe
       client->subscribe("smartoffice/#");
     }
@@ -175,6 +179,7 @@ void reconnect()
 
 void setup()
 {
+  delay(1000);
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(led1_1, OUTPUT);
@@ -237,16 +242,27 @@ void loop()
     reconnect();
   }
   client->loop();
+  if ( ! rfid.PICC_IsNewCardPresent())
+    return;
+
+  // Verify if the NUID has been readed
+  if ( ! rfid.PICC_ReadCardSerial())
+    return;
+
+  
+  Serial.println(F("The NUID tag is:"));
+  printDec(rfid.uid.uidByte, rfid.uid.size);
+  
 
   unsigned long now = millis();
-  if (now - lastMsg > 2000)
+  if (now - lastMsg > 10000)
   {
     lastMsg = now;
     ++value;
-    snprintf(msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
-    Serial.print("Publish message: ");
-    Serial.println(msg);
-    client->publish("testTopic", msg);
+    // snprintf(msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
+    Serial.println("Publish message: 2");
+    // Serial.println(msg);
+    client->publish("smartoffice/card", "2");
   }
 
   // Clears the trigPin
@@ -268,12 +284,27 @@ void loop()
   Serial.print("Distance: ");
   Serial.println(distance);
   delay(2000);
+
+  // Halt PICC
+  rfid.PICC_HaltA();
+
+  // Stop encryption on PCD
+  rfid.PCD_StopCrypto1();
 }
 
-// float getFloat(byte packet[], int i)
-// {
-//   float out;
-//   memcpy(&out, &packet[i], sizeof(float));
+float getFloat(byte packet[], int i)
+{
+  float out;
+  memcpy(&out, &packet[i], sizeof(float));
+  return out;
+}
 
-//   return out;
-// }
+void printDec(byte *buffer, byte bufferSize)
+{
+  for (byte i = 0; i < bufferSize; i++)
+  {
+    Serial.print(buffer[i] < 0x10 ? " 0" : " ");
+    Serial.print(buffer[i], DEC);
+  }
+  Serial.println();
+}
