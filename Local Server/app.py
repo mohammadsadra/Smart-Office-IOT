@@ -172,7 +172,7 @@ def loginUser():
         resp = make_response(jsonify({'message': 'Bad request.'}), 400)
         return resp
 
-    if (body == None) or (guid == None) or (card == None):
+    if  (guid == None) or (card == None):
         resp = make_response(jsonify({'message': 'Bad request.'}), 400)
         return resp
 

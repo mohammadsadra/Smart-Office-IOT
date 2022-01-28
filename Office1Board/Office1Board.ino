@@ -325,7 +325,7 @@ void loop()
   Serial.print("Distance: ");
   Serial.println(distance);
         if(distance <= 20){
-        digitalWrite(1,HIGH)
+        digitalWrite(1,HIGH);
     }
 
   delay(2000);
