@@ -112,6 +112,8 @@ def localserver_token_required(f):
         try:
             # decoding the payload to fetch the stored details
             data = jwt.decode(token, pv_key, algorithms=["HS256"])
+            if data['id'] != 'localserver1':
+                return jsonify({'message' : 'Token is invalid !!'}), 401
             print(data)
         except:
             return jsonify({'message' : 'Token is invalid !!'}), 401
