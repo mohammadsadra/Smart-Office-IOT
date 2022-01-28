@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "43521ef9-8222-4676-9bb3-59e5767890a8",
-		"name": "Smart Home - API",
+		"_postman_id": "83b649f1-88ca-499e-8d0c-754d99c22b54",
+		"name": "SmartOffice - API -Iot",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -48,13 +48,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJndWlkIjoiZjUwZWMwYjctZjk2MC00MDBkLTkxZjAtYzQyYTZkNDRlM2QwIiwiZXhwIjoxNjQ5MTA2MjgwfQ.3G7nxYFgdUqT9B2X0Rc-H9opnAfEN9YHi3dRVcFcXX4",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJndWlkIjoiMjgwM2U3MTQtNTFjZS00Nzg4LTkyYzQtNmVlYWY0YTEyMTNlIiwiZXhwIjoxNjQ5MTA2MjgwfQ.4x_SQWsP6WAk9SA0_v2sfd2hhYvGs9lraX3E7BHd3zg",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"value\": 3.44\n}",
+					"raw": "{\n    \"value\": 2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -62,7 +62,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/user",
+					"raw": "http://127.0.0.1:5001/api/user",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -70,7 +70,7 @@
 						"0",
 						"1"
 					],
-					"port": "5000",
+					"port": "5001",
 					"path": [
 						"api",
 						"user"
@@ -92,7 +92,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"imohammadsadra\",\n    \"password\":\"1234567890\",\n    \"officeId\":\"1\"\n}",
+					"raw": "{\n    \"username\": \"TA\",\n    \"password\":\"admin-TA\",\n    \"officeId\":\"1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -132,7 +132,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"lightOnTime\": \"14:00\",\n    \"lightOffTime\":\"23:30\"\n}",
+					"raw": "{\n    \"lightOnTime\": \"6:00\",\n    \"lightOffTime\":\"18:30\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -256,7 +256,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"officeId\": 1,\n    \"lightOn\": \"5:00\",\n    \"lightOff\":\"10:00\"\n}",
+					"raw": "{\n    \"officeId\": 1,\n    \"lightOn\": \"7:00\",\n    \"lightOff\":\"10:00\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -295,7 +295,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"officeId\": 1,\n    \"roomId\": 2,\n    \"card\": 2,\n    \"lightValue\": 2.3\n}",
+					"raw": "{\n    \"officeId\": 1,\n    \"roomId\": 3,\n    \"card\": 3,\n    \"lightValue\": 39\n}",
 					"options": {
 						"raw": {
 							"language": "json"
