@@ -374,3 +374,35 @@ def addActivityToTable(ok):
     }), 200)
     return resp
  
+
+
+@app.route('/api/user/setuserlight', methods=['PUT'])
+@localserver_token_required
+def setUserLight(ok):
+    try:
+        body = request.get_json()
+        print(body)
+        value = body['value']
+        guid = body['guid']
+    except Exception as ex:
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+    
+    if (body == None) or (body['value'] == None):
+        resp = make_response(jsonify({'message': 'Bad request.'}), 400)
+        return resp
+
+    
+    user = User.query.filter_by(guid=guid).first()
+
+    if user == None:
+        resp = make_response(jsonify({'message': 'User not found',}), 400)
+        return resp
+    
+    user.lightValue = value
+    db.session.commit()
+    resp = make_response(jsonify({
+        'message': 'Light value changed.',
+    }), 200)
+    return resp
+ 
