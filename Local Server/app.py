@@ -81,7 +81,7 @@ client.loop_start()
 ##################################################
 
 pv_key = 'NTNv7j0TuYARvmNMmWXo6fKvM4o6nv/aUi9ryX38ZH+L1bkrnD1ObOQ8JAUmHCBq7Iy7otZcyAagBLHVKvvYaIpmMuxmARQ97jUVG16Jkpkp1wXOPsrF9zwew6TpczyHkHgX5EuLg2MeBuiT/qJACs1J0apruOOJCg/gOtkjB4c='
-
+serverJWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImxvY2Fsc2VydmVyMSIsImV4cCI6MTY0OTEwNjI4MH0.7nGuCifHSYp9B3cbWGkOxAq_dSeCehq2VI7H5DOBL4o'
 app = Flask(__name__)
 CORS(app)
 
@@ -182,13 +182,13 @@ def loginUser():
             db.session.delete(cachedUser)
             db.session.commit()
         
-        resp = requests.get('http://localhost:5000/api/user/getlight', json={"guid": user.guid})
+        resp = requests.get('http://localhost:5000/api/user/getlight', json={"guid": user.guid} ,headers={"Authorization": "Bearer " + serverJWT})
         if resp.status_code == 200:
             newCache = Cache(lightValue=resp.json()['lightValue'], expireDate=datetime.now() + timedelta(hours=12),
                              userId=user.guid)
             ### LOCAL SERVER SENDS ITS OWN OFFICE ID
             activityResponse = requests.post('http://localhost:5000/api/user/addActivity',
-                                             json={"userId": user.guid, "officeId": 1})
+                                             json={"userId": user.guid, "officeId": 1},headers={"Authorization": "Bearer " + serverJWT})
             if activityResponse.status_code != 200:
                 resp = make_response(jsonify({'message': 'Failed setting ACTIVITY from remote server!!!'}), 400)
                 return resp
@@ -206,7 +206,7 @@ def loginUser():
         resp = make_response(
             jsonify({'token': encoded_jwt, 'lightValue': cachedUser.lightValue, 'message': 'Returned from CACHE'}), 200)
         activityResponse = requests.post('http://localhost:5000/api/user/addActivity',
-                                         json={"userId": user.guid, "officeId": 1})
+                                         json={"userId": user.guid, "officeId": 1},headers={"Authorization": "Bearer " + serverJWT})
         if activityResponse.status_code != 200:
             resp = make_response(jsonify({'message': 'Failed setting ACTIVITY in remote server!!!'}), 400)
             return resp

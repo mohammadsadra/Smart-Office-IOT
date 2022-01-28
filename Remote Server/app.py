@@ -17,7 +17,7 @@ import requests
 ##################################################
 
 pv_key = 'NTNv7j0TuYARvmNMmWXo6fKvM4o6nv/aUi9ryX38ZH+L1bkrnD1ObOQ8JAUmHCBq7Iy7otZcyAagBLHVKvvYaIpmMuxmARQ97jUVG16Jkpkp1wXOPsrF9zwew6TpczyHkHgX5EuLg2MeBuiT/qJACs1J0apruOOJCg/gOtkjB4c='
-
+localserver1token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImxvY2Fsc2VydmVyMSIsImV4cCI6MTY0OTEwNjI4MH0.7nGuCifHSYp9B3cbWGkOxAq_dSeCehq2VI7H5DOBL4o'
 
 app = Flask(__name__)
 CORS(app)
@@ -289,6 +289,7 @@ def registerUser(current_user):
 ##################################################################
 
 @app.route('/api/user/getlight', methods=['GET'])
+@token_required
 def getLight():
     try:
         body = request.get_json()
@@ -315,6 +316,7 @@ def getLight():
     return resp
  
 @app.route('/api/user/addActivity', methods=['POST'])
+@token_required
 def addActivityToTable():
     try:
         body = request.get_json()
